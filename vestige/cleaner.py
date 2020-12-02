@@ -3,7 +3,9 @@ from comment_parser import comment_parser
 from argparse import ArgumentParser
 from text_classifier import TextClassifier
 import numpy as np
-
+import os
+from download_utils import download_url
+from constants import LOCAL_MODEL_PATH, EXTERNAL_MODEL_PATH
 
 def fix_inline_comments(file_path, tc):
     """Remove commented code while leaving useful comments in-tact.
@@ -62,16 +64,21 @@ def fix_text_lines(file_path, output_path, tc):
                         print("Comment will be left in, thanks!")
                         writer.write(line)
 
-
 if __name__ == '__main__':
-    
+    dirname = os.path.dirname(__file__)
+    download_path = os.path.join(dirname, LOCAL_MODEL_PATH)
+    if not os.path.exists(download_path):
+        print("First run, downloading model")
+        download_url(EXTERNAL_MODEL_PATH, download_path)
+
+
     parser = ArgumentParser(description='Remove vestigial comments from code')
     parser.add_argument('--input', type=str, required=True,
                         help='Input file for cleaning')
     parser.add_argument('--output', type=str, default=None, required=False,
                         help='sum the integers (default: find the max)')
     tc = TextClassifier()
-    tc.load('model_v2.pt')
+    tc.load(download_path)
     args = parser.parse_args()
     if args.input[-3:] == '.py':
         fixed_lines = fix_inline_comments(args.input, tc)
