@@ -10,7 +10,7 @@ python -m vestige --input cleaner.py --output cleaned.py
 ## Q/A
 - Will vestige break my code!?
 
-Thanksfully, no! Vestige only analyzes inline comments, so while it's possible for it to remove some inline documentation by mistake, it won't ever affect the actual code.
+Thankfully, no! Vestige only analyzes inline comments, so while it's possible for it to remove some inline documentation by mistake, it won't ever affect the actual code.
 - How much can I trust vestige?
 
 Vestige's current model is about 95% accurate on internal tests- we recommend double checking the diff of the original and output final to ensure everything has worked properly.  In the future we are aiming to increase this accuracy significantly through improvement of both the model and the training dataset.
