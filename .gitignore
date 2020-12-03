@@ -4,3 +4,7 @@
 *.pt
 *.zip
 *.pyc
+dist/*
+build/*
+*.egg-info*
+build.sh*
