@@ -31,7 +31,8 @@ def fix_inline_comments(file_path, tc):
         # If the model things it is commented code
         if np.argmax(tc.predict(str(comment)).cpu(), axis=1) == 1:
             line_num = comment.line_number() - 1
-            end_index = read_data[line_num].index(str(comment)) - 1
+            end_index = len(read_data[line_num]) - len(comment)
+            
             # Remove it
             line_with_comment_removed = read_data[line_num][0:end_index]
             if len(line_with_comment_removed.strip()) == 0:
