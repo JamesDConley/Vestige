@@ -91,12 +91,3 @@ if __name__ == '__main__':
                 fh.write(f"{line}\n")
     else:
         fix_text_lines(args.input, args.output, tc)
-
-
-
-    
-
-
-
-    
-
