@@ -28,7 +28,7 @@ def fix_inline_comments(file_path, tc):
     comments = [comment for comment in comments if not comment.is_multiline()]
     removal_indexes = []
     for comment in tqdm(comments):
-        # If the model things it is commented code
+        # If the model thinks it is commented code
         if np.argmax(tc.predict(str(comment)).cpu(), axis=1) == 1:
             line_num = comment.line_number() - 1
             end_index = len(read_data[line_num]) - len(comment)
