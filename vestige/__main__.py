@@ -64,6 +64,7 @@ def fix_text_lines(file_path, output_path, tc):
                 else:
                     print(f'\n\t"{line}"\n')
                     if input("Is this commented code? y/n :").lower().strip() != 'y':
+                        os.system("clear")
                         print("Comment will be left in, thanks!")
                         writer.write(line)
 
