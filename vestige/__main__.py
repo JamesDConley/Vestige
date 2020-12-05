@@ -5,7 +5,7 @@ from text_classifier import TextClassifier
 import numpy as np
 import os
 from .download_utils import download_url
-from .constants import LOCAL_MODEL_PATH, EXTERNAL_MODEL_PATH
+from .constants import LOCAL_MODEL_NAME, EXTERNAL_MODEL_PATH
 
 def fix_inline_comments(file_path, tc):
     """Remove commented code while leaving useful comments in-tact.
@@ -28,15 +28,19 @@ def fix_inline_comments(file_path, tc):
     comments = [comment for comment in comments if not comment.is_multiline()]
     removal_indexes = []
     for comment in tqdm(comments):
-        # If the model things it is commented code
+        # If the model thinks it is commented code
         if np.argmax(tc.predict(str(comment)).cpu(), axis=1) == 1:
             line_num = comment.line_number() - 1
-            end_index = read_data[line_num].index(str(comment)) - 1
+            # -1 to get the '#' as well
+            end_index = (len(read_data[line_num]) - len(str(comment))) - 1 
+
             # Remove it
             line_with_comment_removed = read_data[line_num][0:end_index]
             if len(line_with_comment_removed.strip()) == 0:
                 removal_indexes.append(line_num)
             read_data[line_num] = line_with_comment_removed
+    
+    # We need to remove them from highest index to lowest index so that we don't change the indexing while processing
     removal_indexes.reverse()
     
     # Removes blank lines that were previously comments
@@ -61,12 +65,13 @@ def fix_text_lines(file_path, output_path, tc):
                 else:
                     print(f'\n\t"{line}"\n')
                     if input("Is this commented code? y/n :").lower().strip() != 'y':
+                        os.system("clear")
                         print("Comment will be left in, thanks!")
                         writer.write(line)
 
 if __name__ == '__main__':
     dirname = os.path.dirname(__file__)
-    download_path = os.path.join(dirname, LOCAL_MODEL_PATH)
+    download_path = os.path.join(dirname, LOCAL_MODEL_NAME)
     if not os.path.exists(download_path):
         print("First run, downloading model")
         download_url(EXTERNAL_MODEL_PATH, download_path)
@@ -87,12 +92,3 @@ if __name__ == '__main__':
                 fh.write(f"{line}\n")
     else:
         fix_text_lines(args.input, args.output, tc)
-
-
-
-    
-
-
-
-    
-
