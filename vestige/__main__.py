@@ -32,12 +32,14 @@ def fix_inline_comments(file_path, tc):
         if np.argmax(tc.predict(str(comment)).cpu(), axis=1) == 1:
             line_num = comment.line_number() - 1
             end_index = len(read_data[line_num]) - len(comment)
-            
+
             # Remove it
             line_with_comment_removed = read_data[line_num][0:end_index]
             if len(line_with_comment_removed.strip()) == 0:
                 removal_indexes.append(line_num)
             read_data[line_num] = line_with_comment_removed
+    
+    # We need to remove them from highest index to lowest index so that we don't change the indexing while processing
     removal_indexes.reverse()
     
     # Removes blank lines that were previously comments
