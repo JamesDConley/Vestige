@@ -7,6 +7,13 @@ For example, you can use the tool to remove some comments within it's main file,
 python -m vestige --input cleaner.py --output cleaned.py
 ```
 
+## Installation
+
+To install with pip
+```
+pip install vestige-cleaner
+```
+
 ## Q/A
 - Will vestige break my code!?
 
