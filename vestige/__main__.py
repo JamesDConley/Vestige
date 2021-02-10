@@ -1,11 +1,20 @@
 from tqdm import tqdm
 from comment_parser import comment_parser
 from argparse import ArgumentParser
+import transformers
 from text_classifier import TextClassifier
+
+
 import numpy as np
 import os
+import logging
+
 from .download_utils import download_url
 from .constants import LOCAL_MODEL_NAME, EXTERNAL_MODEL_PATH
+from glob import iglob
+
+logger = logging.getLogger(__name__)
+transformers.logging. set_verbosity_warning()
 
 def fix_inline_comments(file_path, tc):
     """Remove commented code while leaving useful comments in-tact.
@@ -69,26 +78,75 @@ def fix_text_lines(file_path, output_path, tc):
                         print("Comment will be left in, thanks!")
                         writer.write(line)
 
+def clean_file(inp, tc, output=None):
+    """Remove commented code from the file and write it to disk
+
+    Args:
+        input (str): Input file to clean with the textcleaner
+        tc (TextCleaner): TextCleaner object to perform cleaning
+        output (str, optional): Path to save the cleaned file out to. If none it will overwrite the original file. Defaults to None.
+    """
+    fixed_lines = fix_inline_comments(inp, tc)
+    with open(output, 'w') as fh:
+        for i, line in tqdm(enumerate(fixed_lines)):
+            if i == 0:
+                fh.write(f"{line}")
+            else:
+                fh.write(f"\n{line}")
+
+def clean_directory(input_folder, tc, output_folder=None):
+    """Cleans all python files found in the given directory
+
+    Args:
+        input_folder (str): path to the folder to find files under for cleaning
+        output_folder (str, optional): Second folder to save out results to. If None, will overwrite files in the given directory. Defaults to None.
+    """
+    if input_folder[-1] != '/':
+        input_folder = input_folder+'/'
+    if output_folder is None:
+        output_folder = input_folder
+    for path in iglob(os.path.join(input_folder, '*.py')):
+        sub_path = path.replace(input_folder, '')
+        new_path = os.path.join(output_folder, sub_path)
+        os.makedirs(os.path.dirname(new_path), exist_ok=True)
+        logging.debug(f"Running with args {path} {new_path}")
+        clean_file(path, tc, output=new_path)
+
 if __name__ == '__main__':
     dirname = os.path.dirname(__file__)
     download_path = os.path.join(dirname, LOCAL_MODEL_NAME)
     if not os.path.exists(download_path):
         print("First run, downloading model")
         download_url(EXTERNAL_MODEL_PATH, download_path)
+        
 
 
     parser = ArgumentParser(description='Remove vestigial comments from code')
-    parser.add_argument('--input', type=str, required=True,
-                        help='Input file for cleaning')
-    parser.add_argument('--output', type=str, default=None, required=False,
-                        help='sum the integers (default: find the max)')
+    parser.add_argument(
+        "input",
+        type=str,
+        metavar="INPUT_PATH",
+        help="Input file or folder for cleaning",
+    )
+    parser.add_argument('--recursive', '-r', action='store_true', default=False, help='Recursively search a folder and clean files underneat it')
+    parser.add_argument('--output', '-o', type=str, default=None, required=False,
+                        help='Location to save file/files out to. If using --recursive should be a directory')
+    args = parser.parse_args()
+    
+    if args.output is None:
+        output = args.input
+    else:
+        output = args.output
+
     tc = TextClassifier()
     tc.load(download_path)
-    args = parser.parse_args()
-    if args.input[-3:] == '.py':
-        fixed_lines = fix_inline_comments(args.input, tc)
-        with open(args.output, 'w') as fh:
-            for line in tqdm(fixed_lines):
-                fh.write(f"{line}\n")
-    else:
+    
+    if args.recursive:
+        clean_directory(args.input, tc, output_folder=args.output)
+
+    elif args.input[-3:] == '.py':
+        clean_file(args.input, tc, output)
+    elif args.input[-4:] == '.txt':
         fix_text_lines(args.input, args.output, tc)
+    else:
+        print("File type unsupported, exiting")
