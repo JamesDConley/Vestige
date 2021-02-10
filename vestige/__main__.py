@@ -2,11 +2,16 @@ from tqdm import tqdm
 from comment_parser import comment_parser
 from argparse import ArgumentParser
 from text_classifier import TextClassifier
+
 import numpy as np
 import os
+import logging
+
 from .download_utils import download_url
 from .constants import LOCAL_MODEL_NAME, EXTERNAL_MODEL_PATH
 from glob import iglob
+
+logger = logging.getLogger(__name__)
 
 def fix_inline_comments(file_path, tc):
     """Remove commented code while leaving useful comments in-tact.
@@ -101,7 +106,7 @@ def clean_directory(input_folder, tc, output_folder=None):
         sub_path = path.replace(input_folder, '')
         new_path = os.path.join(output_folder, sub_path)
         os.makedirs(os.path.dirname(new_path), exist_ok=True)
-        print(f"Running with args {path} {new_path}")
+        logging.debug(f"Running with args {path} {new_path}")
         clean_file(path, tc, output=new_path)
 
 if __name__ == '__main__':
