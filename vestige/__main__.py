@@ -71,7 +71,7 @@ def fix_text_lines(file_path, output_path, tc):
                         writer.write(line)
 
 def clean_file(inp, tc, output=None):
-    """AI is creating summary for clean_file
+    """Remove commented code from the file and write it to disk
 
     Args:
         input (str): Input file to clean with the textcleaner
