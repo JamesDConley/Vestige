@@ -3,7 +3,7 @@ from comment_parser import comment_parser
 from argparse import ArgumentParser
 import transformers
 from text_classifier import TextClassifier
-
+from glob import iglob
 
 import numpy as np
 import os
@@ -11,7 +11,7 @@ import logging
 
 from .download_utils import download_url
 from .constants import LOCAL_MODEL_NAME, EXTERNAL_MODEL_PATH
-from glob import iglob
+
 
 logger = logging.getLogger(__name__)
 transformers.logging. set_verbosity_warning()

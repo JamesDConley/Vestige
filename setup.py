@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="vestige-cleaner",
-    version="0.0.1a3",
+    version="0.0.1a4",
     author="James Conley",
     author_email="jconley1+vestige@alumni.conncoll.edu",
     description="Remove commented code from projects automatically",
