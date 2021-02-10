@@ -2,9 +2,30 @@
 
 Vestige is a tool that automatically finds and removes commented code from python files.
 
-For example, you can use the tool to remove some comments within it's main file, and output the result into another file cleaned.py like this.
+For example, you can use the tool to remove some comments within an old vestige file, and output the result into another file cleaned.py like this.
 ```
-python -m vestige --input cleaner.py --output cleaned.py
+python -m vestige cleaner.py --output cleaned.py
+```
+
+## Usage
+You can view the full usage with the --help option
+```
+python -m vestige --help
+```
+which yields
+```
+usage: __main__.py [-h] [--recursive] [--output OUTPUT] INPUT_PATH
+
+Remove vestigial comments from code
+
+positional arguments:
+  INPUT_PATH            Input file or folder for cleaning
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --recursive, -r       Recursively search a folder and clean files underneat it
+  --output OUTPUT, -o OUTPUT
+                        Location to save file/files out to. If using --recursive should be a directory
 ```
 
 ## Installation
