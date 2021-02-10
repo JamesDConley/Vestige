@@ -142,13 +142,7 @@ if __name__ == '__main__':
         clean_directory(args.input, tc, output_folder=args.output)
 
     elif args.input[-3:] == '.py':
-        fixed_lines = fix_inline_comments(args.input, tc)
-        with open(args.output, 'w') as fh:
-            for i, line in tqdm(enumerate(fixed_lines)):
-                if i == 0:
-                    fh.write(f"{line}")
-                else:
-                    fh.write(f"\n{line}")
+        clean_file(args.input, tc, output)
     elif args.input[-4:] == '.txt':
         fix_text_lines(args.input, args.output, tc)
     else:
