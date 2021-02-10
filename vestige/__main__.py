@@ -1,7 +1,9 @@
 from tqdm import tqdm
 from comment_parser import comment_parser
 from argparse import ArgumentParser
+import transformers
 from text_classifier import TextClassifier
+
 
 import numpy as np
 import os
@@ -12,6 +14,7 @@ from .constants import LOCAL_MODEL_NAME, EXTERNAL_MODEL_PATH
 from glob import iglob
 
 logger = logging.getLogger(__name__)
+transformers.logging. set_verbosity_warning()
 
 def fix_inline_comments(file_path, tc):
     """Remove commented code while leaving useful comments in-tact.
@@ -128,16 +131,16 @@ if __name__ == '__main__':
     parser.add_argument('--recursive', '-r', action='store_true', default=False, help='Recursively search a folder and clean files underneat it')
     parser.add_argument('--output', '-o', type=str, default=None, required=False,
                         help='Location to save file/files out to. If using --recursive should be a directory')
-    tc = TextClassifier()
-    tc.load(download_path)
     args = parser.parse_args()
-
+    
     if args.output is None:
         output = args.input
     else:
         output = args.output
 
-
+    tc = TextClassifier()
+    tc.load(download_path)
+    
     if args.recursive:
         clean_directory(args.input, tc, output_folder=args.output)
 
